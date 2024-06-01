@@ -1,10 +1,12 @@
 # Frame Batteries
 
-This project provides a docker container with basic developer tooling for Brilliant Lab's [Frame](https://docs.brilliant.xyz). It includes a Bluetooth Client, Lua script uploading, and example code to get you up and running.
+This community managed project provides a docker container with basic developer tooling for Brilliant Lab's [Frame](https://docs.brilliant.xyz). It includes a Bluetooth Client, Lua script uploading, and example code to get you up and running.
 
 The goal is to accelerate development for all of us who want to hack on this bleeding edge platform. The main development community [lives on discord](https://discord.com/invite/vDS9X7gdwg), come join us!
 
+The official utilities library managed by Brilliant Labs lives here:
 
+* https://github.com/brilliantlabsAR/frame-utilities-for-python
 
 ## Installation
 
