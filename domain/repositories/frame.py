@@ -2,6 +2,7 @@ from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
 
 from domain.repositories.abstract import GenericFrameRepo
+from domain.models.frame import ConnectionState
 
 
 class BleakFrameRepo(GenericFrameRepo):
@@ -9,7 +10,7 @@ class BleakFrameRepo(GenericFrameRepo):
     frame_rx_uuid = "7A230002-5475-A6A4-654C-8431F6AD49C4"
     frame_tx_uuid = "7A230003-5475-A6A4-654C-8431F6AD49C4"
     frame_name = "Frame"
-    client: BleakClient
+    client: BleakClient | None
 
     async def _discover_frames(self) -> list:
         """
@@ -59,7 +60,7 @@ class BleakFrameRepo(GenericFrameRepo):
         await client.write_gatt_char(tx, data)
 
     @property
-    async def connection_state(self) -> None: ...
+    async def connection_state(self) -> ConnectionState: ...
 
     async def connect(self, retries: int = 50):
         """

@@ -1,4 +1,5 @@
 from typing import Any, Iterable, Protocol
+from domain.models.frame import ConnectionState
 
 
 class GenericDBRepo(Protocol):
@@ -13,7 +14,7 @@ class GenericDBRepo(Protocol):
 class GenericFrameRepo(Protocol):
 
     @property
-    def connection_state(self) -> None: ...
+    def connection_state(self) -> ConnectionState: ...
 
     async def connect(self, retries: int) -> None: ...
 
