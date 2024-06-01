@@ -1,4 +1,4 @@
-# Frame Batteries
+# :battery: :monocle_face: Frame Batteries :battery:
 
 This community managed project provides a docker container with basic developer tooling for Brilliant Lab's [Frame](https://docs.brilliant.xyz). It includes a Bluetooth Client, Lua script uploading, and example code to get you up and running.
 
