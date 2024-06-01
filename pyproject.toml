@@ -1,0 +1,30 @@
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
+
+[tool.poetry]
+name = "TimeHelloWorld"
+version = "0.1.0"
+description = "Testing minimal frame setup by showing the time on tap"
+authors = ["-Maxfield Chen <maxfieldchen@gmail.com>"]
+readme = "README.md"
+packages = [
+]
+
+[tool.poetry.dependencies]
+python = "3.12.1"
+python-dotenv = "^1.0.1"
+frameutils = "^0.1.10"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.1.1"
+requests = "^2.31.0"
+flake8 = "^7.0.0"
+pytest = "^8.0.0"
+isort = "^5.13.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

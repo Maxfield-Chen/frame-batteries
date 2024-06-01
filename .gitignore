@@ -1,0 +1,6 @@
+.env
+.pytest_cache
+.vscode
+.DS_Store
+output
+creds
