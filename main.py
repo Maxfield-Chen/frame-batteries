@@ -1,7 +1,7 @@
 from bleak import BleakClient, BleakScanner
 
 
-# TODO: move ble code into separate client module
+# TODO: move ble code into implementation of GenericFrameRepo
 frame_service_uuid = "7A230001-5475-A6A4-654C-8431F6AD49C4"
 frame_rx_uuid = "7A230002-5475-A6A4-654C-8431F6AD49C4"
 frame_tx_uuid = "7A230003-5475-A6A4-654C-8431F6AD49C4"
