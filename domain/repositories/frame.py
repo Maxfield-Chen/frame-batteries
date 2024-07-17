@@ -1,5 +1,7 @@
 from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
+from bleak.backends.service import BleakGATTService
+from bleak.backends.scanner import AdvertisementData
 
 from domain.repositories.abstract import GenericFrameRepo
 from domain.models.frame import ConnectionState
@@ -10,7 +12,10 @@ class BleakFrameRepo(GenericFrameRepo):
     frame_rx_uuid = "7A230002-5475-A6A4-654C-8431F6AD49C4"
     frame_tx_uuid = "7A230003-5475-A6A4-654C-8431F6AD49C4"
     frame_name = "Frame"
-    client: BleakClient | None
+    _client: BleakClient
+    _service: BleakGATTService
+    _tx_char: BleakGATTCharacteristic
+    _rx_char: BleakGATTCharacteristic
 
     async def _discover_frames(self) -> list:
         """
@@ -62,21 +67,29 @@ class BleakFrameRepo(GenericFrameRepo):
     @property
     async def connection_state(self) -> ConnectionState: ...
 
-    async def connect(self, retries: int = 50):
+    async def connect(
+        self,
+        print_handler=lambda _: None,
+        data_handler=lambda _: None,
+        retries: int = 50,
+    ):
         """
         Asynchronously connects to a Frame device, saving a client object. Must be called before other methods.
 
         This method attempts to discover Frame devices and connect to the first one found.
         If no Frame devices are found, it retries the process for a specified number of times.
-        Once connected, it validates the Frame service and TX characteristic is present.
-        If the Frame service or TX characteristic is not found, an exception is raised.
+        Once connected, it validates the Frame service TX and RX characteristic is present.
+        If the Frame service or TX / RX characteristic is not found, an exception is raised.
 
         Args:
+            print_handler (lambda data): async method called when data arrives
+            data_handler (lambda data): async method called when data arrives
             retries (int, optional): The number of times to retry the connection process if no Frame devices are found. Defaults to 50.
 
         Raises:
             Exception: If the service specified by frame_service_uuid is not found.
             Exception: If the TX characteristic specified by frame_tx_uuid is not found.
+            Exception: If the RX characteristic specified by frame_rx_uuid is not found.
             Exception: If no Frame device is found after the specified number of retries.
         """
         frames = []
@@ -97,7 +110,15 @@ class BleakFrameRepo(GenericFrameRepo):
                             raise Exception(
                                 f"TX characteristic '{self.frame_tx_uuid}' not found"
                             )
-                        self.client = client
+                        rx = service.get_characteristic(self.frame_rx_uuid)
+                        if not rx:
+                            raise Exception(
+                                f"RX characteristic '{self.frame_rx_uuid}' not found"
+                            )
+                        self._client = client
+                        self._service = service
+                        self._tx_char = tx
+                        self._rx_char = rx
             else:
                 print("Frames not found, trying again...")
                 retries += 1
