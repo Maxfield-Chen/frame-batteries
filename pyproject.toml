@@ -13,10 +13,11 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "3.12.1"
+python = "3.12.3"
 python-dotenv = "^1.0.1"
 frameutils = "^0.1.10"
 pytest-asyncio = "^0.23.7"
+bleak = "^0.22.2"
 
 
 [tool.poetry.group.dev.dependencies]

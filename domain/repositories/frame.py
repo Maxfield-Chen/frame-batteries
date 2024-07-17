@@ -2,23 +2,23 @@ from typing import Any, Callable
 from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
 from bleak.backends.service import BleakGATTService
-import asyncio
 
 from domain.repositories.abstract import GenericFrameRepo
 from domain.models.frame import ConnectionState
 
 
 class BleakFrameRepo(GenericFrameRepo):
-    frame_service_uuid = "7A230001-5475-A6A4-654C-8431F6AD49C4"
-    frame_rx_uuid = "7A230002-5475-A6A4-654C-8431F6AD49C4"
-    frame_tx_uuid = "7A230003-5475-A6A4-654C-8431F6AD49C4"
+    frame_service_uuid = "7a230001-5475-a6a4-654c-8431f6ad49c4"
+    frame_rx_uuid = "7a230002-5475-a6a4-654c-8431f6ad49c4"
+    frame_tx_uuid = "7a230003-5475-a6a4-654c-8431f6ad49c4"
+
     frame_name = "Frame"
     _client: BleakClient
     _service: BleakGATTService
     _tx_char: BleakGATTCharacteristic
     _rx_char: BleakGATTCharacteristic
     _data_handler: Callable[[bytes], None]
-    _print_handler: Callable[[str], None]
+    _print_handler: Callable[[bytes], None]
 
     def __init__(
         self,
@@ -92,31 +92,31 @@ class BleakFrameRepo(GenericFrameRepo):
             frames = await self._discover_frames()
             if frames:
                 frame_addr = frames[0]
-                async with BleakClient(frame_addr) as client:
+                client = BleakClient(frame_addr)
+                await client.connect()
+                if client.is_connected:
                     print(f"Connected {client.is_connected}")
-                    if client.is_connected:
-                        await self._client.start_notify(
-                            self.frame_rx_uuid, self._notification_handler
+                    await client.start_notify(
+                        self.frame_tx_uuid, self._notification_handler
+                    )
+                    service = client.services.get_service(self.frame_service_uuid)
+                    if not service:
+                        raise Exception(f"Service '{self.frame_service_uuid} not found")
+                    tx = service.get_characteristic(self.frame_tx_uuid)
+                    if not tx:
+                        raise Exception(
+                            f"TX characteristic '{self.frame_tx_uuid}' not found"
                         )
-                        service = client.services.get_service(self.frame_service_uuid)
-                        if not service:
-                            raise Exception(
-                                f"Service '{self.frame_service_uuid} not found"
-                            )
-                        tx = service.get_characteristic(self.frame_tx_uuid)
-                        if not tx:
-                            raise Exception(
-                                f"TX characteristic '{self.frame_tx_uuid}' not found"
-                            )
-                        rx = service.get_characteristic(self.frame_rx_uuid)
-                        if not rx:
-                            raise Exception(
-                                f"RX characteristic '{self.frame_rx_uuid}' not found"
-                            )
-                        self._client = client
-                        self._service = service
-                        self._tx_char = tx
-                        self._rx_char = rx
+                    rx = service.get_characteristic(self.frame_rx_uuid)
+                    if not rx:
+                        raise Exception(
+                            f"RX characteristic '{self.frame_rx_uuid}' not found"
+                        )
+                    self._client = client
+                    self._service = service
+                    self._tx_char = tx
+                    self._rx_char = rx
+                    return
             else:
                 print("Frames not found, trying again...")
                 retries += 1
