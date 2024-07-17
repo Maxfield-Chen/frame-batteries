@@ -1,4 +1,4 @@
-from typing import Any, Callable, NoReturn
+from typing import Any, Callable
 from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
 from bleak.backends.service import BleakGATTService
@@ -17,14 +17,14 @@ class BleakFrameRepo(GenericFrameRepo):
     _service: BleakGATTService
     _tx_char: BleakGATTCharacteristic
     _rx_char: BleakGATTCharacteristic
-    _data_handler: Callable[[bytes], NoReturn]
-    _print_handler: Callable[[str], NoReturn]
+    _data_handler: Callable[[bytes], None]
+    _print_handler: Callable[[str], None]
 
     def __init__(
         self,
         *,
-        print_handler: Callable[[Any]] = lambda _: None,
-        data_handler: Callable[[Any]] = lambda _: None,
+        print_handler: Callable[[Any], None] = lambda _: None,
+        data_handler: Callable[[Any], None] = lambda _: None,
     ):
         """
         Args:
@@ -33,7 +33,6 @@ class BleakFrameRepo(GenericFrameRepo):
         """
         self.print_handler = print_handler
         self.data_handler = data_handler
-        asyncio.run(self.connect())
 
     async def _notification_handler(self, _, data):
         if data[0] == 1:
